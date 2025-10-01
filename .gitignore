@@ -1,0 +1,18 @@
+.env
+__pycache__/
+.mypy_cache/
+.venv/
+.pytest_cache/
+.env
+MOCK_DATA.json
+seed_devices.py
+venv/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Env
+.env
+

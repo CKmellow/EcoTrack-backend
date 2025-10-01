@@ -1,0 +1,18 @@
+#run server with
+uvicorn main:app --reload
+
+#Dependencies
+fastapi
+uvicorn[standard]
+python-dotenv
+motor
+passlib[bcrypt]
+python-jose[cryptography]
+email-validator
+pydantic
+pydantic[email]    # for email validation via pydantic
+python-multipart   # for handling forms / file uploads if needed
+openai
+requests python-dotenv
+
+

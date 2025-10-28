@@ -1,0 +1,76 @@
+##Available backend Routes
+
+##Auth
+
+
+POST
+/api/auth/signup
+Signup
+
+
+POST
+/api/auth/login
+Login
+
+##Admin
+
+
+POST
+/api/admin/company/add-user
+Add User
+
+
+
+GET
+/api/admin/company/user/{user_id}
+Get User
+
+
+
+PUT
+/api/admin/company/edit-user/{user_id}
+Edit User
+
+
+
+DELETE
+/api/admin/company/delete-user/{user_id}
+Delete User
+
+
+
+GET
+/api/admin/company/department-admins
+Get Department Admins
+
+
+## Departments
+
+
+GET
+/api/departments/departments
+List Departments
+
+
+
+POST
+/api/departments/departments
+Create Department
+
+
+
+GET
+/api/departments/departments/{dept_id}
+Get Department
+
+
+
+PUT
+/api/departments/departments/{dept_id}
+Edit Department
+
+
+
+DELETE
+/api/departments/departments/{dept_id}
+Delete Department

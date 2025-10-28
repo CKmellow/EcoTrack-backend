@@ -1,0 +1,67 @@
+# EcoTrack Backend Setup Guide
+
+This guide will help you set up and run the EcoTrack backend using FastAPI + MongoDB.
+
+---
+
+## 1. Prerequisites
+- Python 3.10+ installed
+- MongoDB Atlas account (or a local MongoDB instance)
+- Git installed
+- Virtual environment manager like venv 
+
+
+## 2. Create and Activate a Virtual Environment
+On Linux/Mac:
+    python3 -m venv venv
+    source venv/bin/activate
+
+On Windows:
+    python -m venv venv
+    venv\Scripts\activate
+
+---
+
+## 4. Install Dependencies
+note:
+    Get dependencies from requirements.txt file in the backend folder.
+Run:
+    pip install -r requirements.txt
+
+---
+
+## 5. Environment Variables
+Create a `.env` file in the `backend/` folder with the following:
+
+MONGO_URI="your_mongodb_connection_string"
+SECRET_KEY="your_jwt_secret"
+ALGORITHM="HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+Replace with your actual MongoDB URI sent to the whatsapp group.
+
+---
+
+## 6. Run the Development Server
+Start the backend with:
+    uvicorn main:app --reload
+
+This will run the server at:
+    http://127.0.0.1:8000
+
+---
+
+## 7. API Documentation (can use like postman to test routes: Remember to authorize first)
+FastAPI automatically generates docs:
+
+- Swagger UI: http://127.0.0.1:8000/docs ---recommended
+- ReDoc:      http://127.0.0.1:8000/redoc
+
+---
+
+## 8. Stopping the Server
+Press `CTRL + C` in the terminal to stop the backend.
+
+---
+
+You’re ready to use the EcoTrack backend 🚀

@@ -18,10 +18,18 @@ security = HTTPBearer()
 
 
 def hash_password(password: str):
+    # bcrypt only supports passwords up to 72 characters
+    if not isinstance(password, str):
+        password = str(password)
+    password = password[:72]
     return pwd_context.hash(password)
 
 
 def verify_password(password: str, hashed: str):
+    # bcrypt only supports passwords up to 72 characters
+    if not isinstance(password, str):
+        password = str(password)
+    password = password[:72]
     return pwd_context.verify(password, hashed)
 
 

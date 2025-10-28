@@ -27,8 +27,23 @@ async def get_device_logs(device_id: str, current_user=Depends(require_admin)):
     logs = await activity_service.get_logs(filter_query={"device_id": device_id})
     return {"logs": logs}
 
+
 # --- Get Logs by User ---
 @router.get("/logs/user/{user_id}")
 async def get_user_logs(user_id: str, current_user=Depends(require_admin)):
     logs = await activity_service.get_logs(filter_query={"user_id": user_id})
+    return {"logs": logs}
+
+# --- Get Logs by Department (Company Admin Only) ---
+from bson import ObjectId
+
+@router.get("/logs/department/{department_id}")
+async def get_department_logs(department_id: str, current_user=Depends(require_admin)):
+    """Get logs for a department. Only accessible to company admin."""
+    # Try both ObjectId and string for deptId
+    filter_query = {"$or": [
+        {"deptId": department_id},
+        {"deptId": ObjectId(department_id)} if ObjectId.is_valid(department_id) else {"deptId": None}
+    ]}
+    logs = await activity_service.get_logs(filter_query=filter_query)
     return {"logs": logs}

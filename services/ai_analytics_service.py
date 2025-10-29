@@ -1,3 +1,22 @@
+async def analyze_bill(bill_amount: float, rate_per_kwh: float):
+    # Calculate kWh used
+    kwh_used = bill_amount / rate_per_kwh if rate_per_kwh else 0
+    prompt = f"""
+The company KPLC bill for the previous month was KES {bill_amount:,.2f}.
+The rate per kWh is KES {rate_per_kwh:,.2f}.
+This means the company used {kwh_used:,.2f} kWh.
+
+Analyze whether this usage is efficient for a typical company, suggest possible reasons for high/low usage, and recommend actions to improve efficiency. Give actionable insights for a company admin in Kenya."
+"""
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=[
+            {"role": "system", "content": ANALYSIS_SYSTEM_PROMPT},
+            {"role": "user", "content": prompt}
+        ]
+    )
+    content = response.choices[0].message.content
+    return content.strip() if content else "No analysis returned."
 # services/ai_analytics_service.py
 import os
 import groq

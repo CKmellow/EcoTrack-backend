@@ -1,3 +1,37 @@
+# -------------------------------
+# SIMULATE DEVICE (status + metrics)
+# -------------------------------
+async def simulate_device(device_id: str, status: str, active_hours: float, idle_hours: float, overtime_hours: float, user_id: str = "system"):
+    """Update status and hour metrics in one call and log"""
+    device = await devices.find_one({"_id": ObjectId(device_id)})
+    if not device:
+        return False
+
+    before = device.copy()
+
+    update_fields = {
+        "status": status,
+        "active_hours": active_hours,
+        "idle_hours": idle_hours,
+        "overtime_hours": overtime_hours
+    }
+
+    await devices.update_one(
+        {"_id": ObjectId(device_id)},
+        {"$set": update_fields}
+    )
+
+    after = await devices.find_one({"_id": ObjectId(device_id)})
+
+    await log_and_recalc(
+        user_id=user_id,
+        dept_id=after.get("deptId"),
+        device_id=device_id,
+        action="simulate",
+        before=before,
+        after=after,
+    )
+    return True
 from bson import ObjectId
 from config.database import db
 from services.activity_service import log_and_recalc

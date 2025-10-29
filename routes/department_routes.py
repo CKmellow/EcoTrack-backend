@@ -26,6 +26,17 @@ async def require_admin(current_user=Depends(auth_service.get_current_user)):
     return current_user
 
 
+# --- Recalculate Department Metrics ---
+from services.metrics_service import update_department_metrics
+
+@router.post("/departments/{dept_id}/recalculate")
+async def recalculate_department_metrics(dept_id: str, current_user=Depends(require_admin)):
+    result = await update_department_metrics(dept_id)
+    if not result:
+        raise HTTPException(status_code=404, detail="Department or devices not found")
+    return result
+
+
 # --- Create Department ---
 @router.post("/departments")
 async def create_department(dept: Department, current_user=Depends(require_admin)):

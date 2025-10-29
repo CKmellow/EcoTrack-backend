@@ -7,8 +7,6 @@ from utils.calculations import (
     calculate_deviation
 )
 
-from services.ai_analytics_service import analyze_department
-
 async def update_department_metrics(dept_id: str):
     department = await db.departments.find_one({"_id": ObjectId(dept_id)})
     devices = await db.devices.find({"deptId": dept_id}).to_list(None)
@@ -53,12 +51,4 @@ async def update_department_metrics(dept_id: str):
         }}
     )
 
-    # Fetch updated department for AI analysis
-    updated_dept = await db.departments.find_one({"_id": ObjectId(dept_id)})
-    ai_analysis = await analyze_department(updated_dept)
-
-    return {
-        "message": "Department metrics updated successfully",
-        "ai_analysis": ai_analysis,
-        "department": updated_dept
-    }
+    return {"message": "Department metrics updated successfully"}

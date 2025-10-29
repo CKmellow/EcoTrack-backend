@@ -58,13 +58,37 @@ async def update_device(device_id: str, update: dict, current_user=Depends(requi
     return {"message": "Device updated successfully"}
 
 
-# --- Update Device Status Only ---
-@router.patch("/devices/{device_id}/status")
-async def update_device_status(device_id: str, status: str, current_user=Depends(require_admin)):
-    updated = await device_service.update_device_status(device_id, status, user_id=current_user["_id"])
+
+# --- Simulate Device State & Metrics ---
+from fastapi import Body
+
+
+# --- Allow both company_admin and dept_admin ---
+async def require_company_or_dept_admin(current_user=Depends(auth_service.get_current_user)):
+    if current_user["role"] not in ("company_admin", "dept_admin"):
+        raise HTTPException(status_code=403, detail="Admins only")
+    return current_user
+
+@router.patch("/devices/{device_id}/simulate")
+async def simulate_device(
+    device_id: str,
+    status: str = Body(...),
+    active_hours: float = Body(...),
+    idle_hours: float = Body(...),
+    overtime_hours: float = Body(...),
+    current_user=Depends(require_company_or_dept_admin)
+):
+    updated = await device_service.simulate_device(
+        device_id,
+        status,
+        active_hours,
+        idle_hours,
+        overtime_hours,
+        user_id=current_user["_id"]
+    )
     if not updated:
         raise HTTPException(status_code=404, detail="Device not found")
-    return {"message": f"Device status updated to {status}"}
+    return {"message": "Device state and metrics updated"}
 
 
 

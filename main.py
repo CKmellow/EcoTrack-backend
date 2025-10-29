@@ -33,6 +33,6 @@ async def protected_route(credentials: HTTPAuthorizationCredentials = Depends(se
     token = credentials.credentials
     return {"message": "Access granted", "token": token}
 
-@app.get("/")
+app.include_router(ai_routes.router, prefix="/api/ai", tags=["AI Analytics"])
 def root():
     return {"message": "Welcome to EcoTrack API 🚀"}

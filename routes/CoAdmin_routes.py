@@ -22,6 +22,19 @@ async def require_admin(current_user=Depends(auth_service.get_current_user)):
 async def add_user(new_user: UserSignup, current_user=Depends(require_admin)):
     user_dict = new_user.dict()
 
+
+    # If role is department_admin and password is not provided, set default password
+    if user_dict.get("role") == "department_admin" and not user_dict.get("password"):
+        user_dict["password"] = "Admin123"
+
+    # Convert department_id to ObjectId if present and not None
+    if user_dict.get("department_id"):
+        try:
+            from bson import ObjectId
+            user_dict["department_id"] = ObjectId(user_dict["department_id"])
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid department_id format")
+
     # Check if email already exists
     existing = await db["users"].find_one({"email": user_dict["email"]})
     if existing:
@@ -46,6 +59,24 @@ async def get_user(user_id: str, current_user=Depends(require_admin)):
 # --- Edit User ---
 @router.put("/company/edit-user/{user_id}")
 async def edit_user(user_id: str, update: dict, current_user=Depends(require_admin)):
+    # Fetch the user to check their role
+    user = await db["users"].find_one({"_id": ObjectId(user_id)})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found or not in your company")
+
+
+    # Prevent editing password for department admins
+    if user.get("role") == "department_admin" and "password" in update:
+        update = {k: v for k, v in update.items() if k != "password"}
+
+    # Convert department_id to ObjectId if present and not None
+    if update.get("department_id"):
+        try:
+            from bson import ObjectId
+            update["department_id"] = ObjectId(update["department_id"])
+        except Exception:
+            raise HTTPException(status_code=400, detail="Invalid department_id format")
+
     result = await db["users"].update_one(
         {"_id": ObjectId(user_id)},
         {"$set": update}
@@ -76,6 +107,14 @@ async def get_department_admins(current_user=Depends(require_admin)):
     admins = []
     async for admin in cursor:
         admin["_id"] = str(admin["_id"])
+        # Convert department_id to string if present and is ObjectId
+        if "department_id" in admin and admin["department_id"] is not None:
+            try:
+                from bson import ObjectId
+                if isinstance(admin["department_id"], ObjectId):
+                    admin["department_id"] = str(admin["department_id"])
+            except ImportError:
+                pass
         admins.append(admin)
     return admins
 

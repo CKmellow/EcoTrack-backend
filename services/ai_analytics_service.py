@@ -1,5 +1,8 @@
 import os
-import groq
+import importlib
+import importlib.util
+
+groq = importlib.import_module("groq") if importlib.util.find_spec("groq") else None
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -23,6 +26,8 @@ Deviation: {metrics.get('deviation', {})}
 
 
 def _get_client():
+    if groq is None:
+        raise RuntimeError("groq package is not installed")
     if not GROQ_API_KEY:
         raise RuntimeError("GROQ_API_KEY is not configured")
     return groq.Client(api_key=GROQ_API_KEY)

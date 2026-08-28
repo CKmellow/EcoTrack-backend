@@ -5,7 +5,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 
 
 # Routers
-from routes import auth_routes, CoAdmin_routes, department_routes, ai_routes,device_routes, activity_routes, department_routes, auth_routes, energy_routes, stats_routes
+from routes import auth_routes, CoAdmin_routes, department_routes, ai_routes, device_routes, activity_routes, energy_routes
 
 # Middleware
 from middleware.cors import setup_cors
@@ -34,5 +34,8 @@ async def protected_route(credentials: HTTPAuthorizationCredentials = Depends(se
     return {"message": "Access granted", "token": token}
 
 app.include_router(ai_routes.router, prefix="/api/ai", tags=["AI Analytics"])
+
+
+@app.get("/")
 def root():
     return {"message": "Welcome to EcoTrack API 🚀"}

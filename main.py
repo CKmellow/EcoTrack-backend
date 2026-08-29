@@ -1,6 +1,10 @@
 # main.py
-from fastapi import FastAPI, Depends
+import os
+from datetime import datetime, timezone
+
+from fastapi import FastAPI, Depends, Header, HTTPException
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from config.database import db
 
 
 
@@ -39,3 +43,21 @@ app.include_router(ai_routes.router, prefix="/api/ai", tags=["AI Analytics"])
 @app.get("/")
 def root():
     return {"message": "Welcome to EcoTrack API 🚀"}
+
+
+@app.get("/api/internal/keepalive")
+async def keepalive(authorization: str | None = Header(default=None)):
+    cron_secret = os.getenv("CRON_SECRET")
+    if cron_secret and authorization != f"Bearer {cron_secret}":
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+    try:
+        ping = await db.command("ping")
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"DB ping failed: {exc}") from exc
+
+    return {
+        "status": "ok",
+        "ping": ping,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    }
